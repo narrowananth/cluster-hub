@@ -20,7 +20,7 @@ npm i @ananth_1725/cluster-hub
 ## Usage
 
 ```js
-const clusterHub = require('cluster-hub')
+const clusterHub = require('@ananth_1725/cluster-hub')
 
 clusterHub(data, workerLocation, onClusterFinish, onClusterError) // these four params are mandatory
 
