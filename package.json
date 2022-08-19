@@ -1,6 +1,7 @@
 {
-    "name": "cluster-hub",
+    "name": "@ananth_1725/cluster-hub",
     "version": "1.0.0",
+    "private": false,
     "description": "Cluster Hub is a boilerplate that can be used for balancing work load",
     "main": "./src/index.js",
     "scripts": {
