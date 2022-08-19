@@ -14,7 +14,7 @@ This NPM package build purpose is to reduce your work load, time management and 
 You can install the cluster-hub from npm by running.
 
 ```sh
-npm install --save cluster-hub
+npm i @ananth_1725/cluster-hub
 ```
 
 ## Usage
