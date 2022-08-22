@@ -2,7 +2,6 @@ const numCPUs = require('os').cpus().length
 const process = require('process')
 const { fork } = require('child_process')
 const path = require('path')
-const { resolve } = require('path')
 
 let splitToChunks = (data, parts) => {
     let result = []
