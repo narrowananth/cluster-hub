@@ -8,5 +8,6 @@
         "start": "node ./src/index"
     },
     "author": "Ananth S <narrowananth@gmail.com>",
-    "license": "MIT"
+    "license": "MIT",
+    "keywords": ["cluster", "server", "hub", "worker"]
 }
