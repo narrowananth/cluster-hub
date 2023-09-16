@@ -1,54 +1,53 @@
-const numCPUs = require('os').cpus().length
-const process = require('process')
-const { fork } = require('child_process')
-const path = require('path')
+import { cpus } from "os"
+import process from "process"
+import { fork } from "child_process"
+import path from "path"
+import { fileURLToPath } from "url"
 
-let splitToChunks = (data, parts) => {
-    let result = []
-    for (let i = parts; i > 0; i--) { //reverse for loop
-        result.push(data.splice(0, Math.ceil(data.length / i)))
-    }
-    return result
+const cpuCores = cpus().length
+
+const __filename = fileURLToPath(import.meta.url)
+
+const __dirname = path.dirname(__filename)
+
+export const cluster = async (inputData, workerLocation) => {
+	const chunks = splitToChunks(inputData, cpuCores)
+
+	const workerPromises = []
+
+	for (let i = 0; i < cpuCores; i++) {
+		const workerProcess = new Promise((resolve, reject) => {
+			const worker = fork(path.join(__dirname, "worker.js"), [i])
+
+			worker.send({ inputData: chunks[i], index: i, workerLocation })
+
+			worker.on("message", () => {
+				worker.disconnect()
+
+				resolve()
+			})
+
+			worker.on("error", () => {
+				worker.disconnect()
+
+				reject()
+			})
+		})
+
+		workerPromises.push(workerProcess)
+	}
+
+	Promise.all(workerPromises).then(async value => {
+		process.exit()
+	})
 }
 
-let cluster = (data, workerLocation, onClusterFinish, onClusterError) => {
+const splitToChunks = (inputData, cpuCoresCount) => {
+	const result = []
 
-    let chunks = splitToChunks(data, numCPUs)
-    let workerPromises = []
+	for (let i = cpuCoresCount; i > 0; i--)
+		//reverse for loop
+		result.push(inputData.splice(0, Math.ceil(inputData.length / i)))
 
-    for (let i = 0; i < numCPUs; i++) {
-        let workerProcess = new Promise((resolve, reject) => {
-            let worker = fork(path.join(__dirname, 'worker.js'), [i])
-            worker.send({ data: chunks[i], index: i, workerLocation })
-            worker.on("message", ({ status, childWorkerResponse, error }) => {
-                if (status === "success") {
-                    resolve(childWorkerResponse)
-                } else if (status === "failure") {
-                    reject(error)
-                } else {
-                    resolve()
-                }
-                worker.disconnect()
-            })
-            worker.on("error", () => {
-                worker.disconnect()
-                reject()
-            })
-        })
-        workerPromises.push(workerProcess)
-    }
-
-    Promise.all(workerPromises).then((workerPromiseData) => {
-        if (onClusterFinish) {
-            onClusterFinish(workerPromiseData)
-        } else {
-            process.exit()
-        }
-    }).catch((workerPromiseError) => {
-        if (onClusterError) {
-            onClusterError(workerPromiseError)
-        }
-    })
+	return result
 }
-
-module.exports = cluster

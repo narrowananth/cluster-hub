@@ -1,12 +1,17 @@
-const process = require('process')
+import process from "process"
+import path from "path"
+import { fileURLToPath } from "url"
 
-process.on('message', async(props) => {
-    let { workerLocation } = props
-    let childWorker = require(workerLocation)
-    try {
-        let childWorkerResponse = await childWorker(props)
-        process.send({ status: "success", childWorkerResponse })
-    } catch (error) {
-        process.send({ status: "failure", error })
-    }
+const __filename = fileURLToPath(import.meta.url)
+
+const __dirname = path.dirname(__filename)
+
+process.on("message", async props => {
+	const { workerLocation } = props
+
+	const { childCoreProcessFunc } = await import(path.join(__dirname, "..", workerLocation))
+
+	childCoreProcessFunc(props)
+
+	process.send("")
 })
