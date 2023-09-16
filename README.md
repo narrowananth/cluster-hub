@@ -20,6 +20,42 @@ npm i @ananth_1725/cluster-hub
 
 ```js
 
+import cluster from "@ananth_1725/cluster-hub"
+
+cluster(data,childCoreProcessFuncLocation) // these two params are mandatory
+
+`param - data`
+
+`param type - data : array`
+
+`param - childCoreProcessFuncLocation`
+
+`param - type - childCoreProcessFuncLocation : your child core logic function absolute file path`
+
+for example :-
+
+const data = [1,2,3,4]
+
+const childCoreProcessFuncLocation = "/Users/ananths/scripts/src/core/integration/integration-report.js" // file path given like this else throw error or not properly process.
+
+cluster(data,childCoreProcessFuncLocation)
+
+
+
+Also kindly use the child core function name as `childCoreProcessFunc`. Because this name is predefined. // else throw error or not properly process
+
+const childCoreProcessFunc = (sampleData) => { // sampleData is object
+
+    interface sampleData : {
+        data : any
+        cpuIndex : number
+    }
+
+    console.log(sampleData)
+}
+
+Finally you got sliced input to your childCoreProcessFunc(), You can perform your work on this function
+
 ```
 
 ## Conclusion
